@@ -1,0 +1,52 @@
+# .gitignore for .NET / Visual Studio projects
+
+# Build outputs
+bin/
+obj/
+out/
+artifacts/
+
+# Visual Studio / IDE files
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# NuGet
+/packages/
+*.nupkg
+~/.nuget/packages/
+
+# Test results / coverage
+TestResults/
+coverage/
+*.coverage
+*.coveragexml
+*.trx
+
+# Logs
+*.log
+
+# OS generated files
+Thumbs.db
+Desktop.ini
+ehthumbs.db
+Icon?
+$RECYCLE.BIN/
+
+# Dotnet publish
+publish/
+
+# Rider
+.idea/
+
+# Environment / secrets
+.env
+secrets.json
+
+# Misc
+*.vsix
+*.dotCover

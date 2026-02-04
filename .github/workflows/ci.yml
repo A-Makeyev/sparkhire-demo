@@ -1,57 +1,30 @@
-name: CI
+name: CI Tests
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main ]
 
 jobs:
-  build-and-test:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-        dotnet-version: ['8.0.x']
-    env:
-      DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+  test:
+    runs-on: ubuntu-latest 
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: ${{ matrix.dotnet-version }}
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
 
-      - name: Cache NuGet packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.nuget/packages
-          key: nuget-${{ runner.os }}-v1-${{ hashFiles('**/*.csproj') }}
-          restore-keys: nuget-${{ runner.os }}-v1-
+    - name: Restore dependencies
+      run: dotnet restore
 
-      - name: Install Google Chrome on Linux
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y wget gnupg
-          wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-          echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
-          sudo apt-get update
-          sudo apt-get install -y google-chrome-stable
+    - name: Build
+      run: dotnet build --no-restore
 
-      - name: Dotnet restore
-        run: dotnet restore ./comeet.csproj
-
-      - name: Dotnet build
-        run: dotnet build ./comeet.csproj -c Release --no-restore
-
-      - name: Run tests
-        run: dotnet test ./comeet.csproj -c Release --no-build --logger "trx;LogFileName=test_results.trx"
-
-      - name: Upload test results
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results-${{ runner.os }}
-          path: test_results.trx
+    - name: Run tests
+      run: dotnet test
+      env:
+        BASE_URL: https://www.comeet.com 

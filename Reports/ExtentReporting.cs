@@ -1,6 +1,6 @@
 using System.Reflection;
 using System.Diagnostics;
-using System.Runtime.InteropServices; // Added for OS check
+using System.Runtime.InteropServices;
 using AventStack.ExtentReports;
 using AventStack.ExtentReports.Reporter;
 using OpenQA.Selenium;
@@ -12,9 +12,17 @@ namespace Reports {
 
         public static ExtentReports StartReporting() {
             if (_extentReports == null) {
+                // Get GitHub Run ID or generate a random Local ID
+                string? runId = Environment.GetEnvironmentVariable("GITHUB_RUN_NUMBER");
+                if (string.IsNullOrEmpty(runId)) {
+                    runId = "Local-" + new Random().Next(1000, 9999);
+                }
+
                 string timestamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
+                string folderName = $"Run-{runId}_{timestamp}";
                 
-                var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "Results", timestamp);
+                // Construct path to Results folder in project root
+                var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "Results", folderName);
                 
                 if (!Directory.Exists(path)) Directory.CreateDirectory(path);
 
@@ -27,6 +35,9 @@ namespace Reports {
 
                 _extentReports = new ExtentReports();
                 _extentReports.AttachReporter(htmlReporter);
+                
+                _extentReports.AddSystemInfo("Execution ID", runId);
+                _extentReports.AddSystemInfo("Machine", Environment.MachineName);
             }
             return _extentReports;
         }
@@ -39,7 +50,7 @@ namespace Reports {
                     Process.Start(new ProcessStartInfo(_currentReportPath) { UseShellExecute = true });
                 }
             } else {
-                Console.WriteLine("[INFO] Skipping auto open report on Linux");
+                Console.WriteLine($"[INFO] Report generated at: {_currentReportPath}");
             }
         }
 

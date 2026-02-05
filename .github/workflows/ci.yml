@@ -8,7 +8,9 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest 
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
     - uses: actions/checkout@v4
@@ -28,11 +30,20 @@ jobs:
       run: dotnet test --no-build --verbosity normal
       env:
         BASE_URL: ${{ secrets.BASE_URL || 'https://www.comeet.com' }}
+        CHROME_HEADLESS: true 
 
-    - name: Upload Test Report
-      if: always() # Upload even if tests fail
+    - name: Upload Artifact
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: ExtentReport
         path: Results/
         retention-days: 5
+
+    - name: Deploy to GitHub Pages
+      if: always()
+      uses: peaceiris/actions-gh-pages@v4
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./Results  
+        keep_files: true       

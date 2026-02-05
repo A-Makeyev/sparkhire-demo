@@ -4,7 +4,9 @@ using ComeetDemoTests.Config;
 using ComeetDemoTests.Utils;
 using OpenQA.Selenium;
 using ComeetDemoTests.Pages;
+using NUnit.Framework;
 using NUnit.Framework.Interfaces;
+using OpenQA.Selenium.Remote;
 
 namespace ComeetDemoTests.Tests {
     [TestFixture]
@@ -21,7 +23,6 @@ namespace ComeetDemoTests.Tests {
         [SetUp]
         public void Setup() {
             _test = _extent?.CreateTest(TestContext.CurrentContext.Test.Name);
-            
             _driver = WebDriverFactory.Create();
             
             string browserName = "Unknown";
@@ -29,8 +30,7 @@ namespace ComeetDemoTests.Tests {
                 browserName = caps.Capabilities.GetCapability("browserName")?.ToString() ?? "Unknown";
             }
             
-            _test?.Log(Status.Info, $"[INFO] WebDriver launched on browser: {browserName}");
-            
+            _test?.Log(Status.Info, $"[INFO] WebDriver launched: {browserName}");
             _driver.Navigate().GoToUrl(EnvConfig.BaseUrl);
             _test?.Log(Status.Info, $"Navigated to: {EnvConfig.BaseUrl}");
         }
@@ -49,7 +49,7 @@ namespace ComeetDemoTests.Tests {
             double duration = (DateTime.Now - start).TotalSeconds;
 
             if (duration > 3.0) {
-                _test?.Log(Status.Warning, $"WARNING: Get Demo page took {duration:F2}s to load!");
+                _test?.Log(Status.Warning, $"Get Demo page took {duration:F2}s to load!");
             } else {
                 _test?.Log(Status.Pass, $"Get Demo page loaded in {duration:F2}s.");
             }

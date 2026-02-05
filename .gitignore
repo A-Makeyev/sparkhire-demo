@@ -21,7 +21,7 @@ artifacts/
 ~/.nuget/packages/
 
 # Test results / coverage
-TestResults/
+Results/
 coverage/
 *.coverage
 *.coveragexml

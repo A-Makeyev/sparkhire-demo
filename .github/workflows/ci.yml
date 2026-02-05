@@ -25,6 +25,14 @@ jobs:
       run: dotnet build --no-restore
 
     - name: Run tests
-      run: dotnet test
+      run: dotnet test --no-build --verbosity normal
       env:
-        BASE_URL: https://www.comeet.com 
+        BASE_URL: ${{ secrets.BASE_URL || 'https://www.comeet.com' }}
+
+    - name: Upload Test Report
+      if: always() # Upload even if tests fail
+      uses: actions/upload-artifact@v4
+      with:
+        name: ExtentReport
+        path: Results/
+        retention-days: 5

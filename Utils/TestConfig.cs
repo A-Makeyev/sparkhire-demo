@@ -1,13 +1,8 @@
-using System;
 using dotenv.net;
 
-namespace ComeetDemoTests.Config
-{
-    public static class EnvConfig
-    {
-        static EnvConfig()
-        {
-            // Load .env automatically
+namespace ComeetDemoTests.Config {
+    public static class EnvConfig {
+        static EnvConfig() {
             DotEnv.Load();
         }
 

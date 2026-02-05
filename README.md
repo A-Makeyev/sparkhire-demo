@@ -19,5 +19,5 @@ Step 2: Activate GitHub Pages
 
 Go to Settings > Pages.
 Under Build and deployment > Branch:
-Select your branch.
+Select gh-pages branch.
 Select / (root).

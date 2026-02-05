@@ -10,7 +10,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: write # Allows the runner to create the gh-pages branch
 
     steps:
     - uses: actions/checkout@v4
@@ -31,14 +31,25 @@ jobs:
       env:
         BASE_URL: ${{ secrets.BASE_URL || 'https://www.comeet.com' }}
         CHROME_HEADLESS: true 
+        GITHUB_RUN_NUMBER: ${{ github.run_number }}
 
-    - name: Upload Artifact
+    # Expert Step: Create a Landing Page (index.html) so the URL isn't blank
+    - name: Generate Dashboard Index
       if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: ExtentReport
-        path: Results/
-        retention-days: 5
+      run: |
+        mkdir -p Results
+        cd Results
+        echo "<!DOCTYPE html><html><head><title>Test Archive</title>" > index.html
+        echo "<style>body{font-family:Segoe UI,Tahoma,Arial;padding:40px;background:#f4f7f6;} h1{color:#2c3e50;} ul{list-style:none;padding:0;} li{background:#fff;margin:8px 0;padding:15px;border-radius:5px;box-shadow:0 2px 5px rgba(0,0,0,0.1);} a{text-decoration:none;color:#3498db;font-weight:bold;display:block;}</style>" >> index.html
+        echo "</head><body><h1>🚀 QA Automation Reports Archive</h1><ul>" >> index.html
+        
+        # Look at directories, sort by date (newest first), and create links
+        for dir in $(ls -dt Run-*/ | sed 's/\///g'); do
+          echo "<li><a href='./$dir/index.html'>📂 $dir</a></li>" >> index.html
+        done
+        
+        echo "</ul></body></html>" >> index.html
+        cd ..
 
     - name: Deploy to GitHub Pages
       if: always()
@@ -47,4 +58,4 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./Results 
         publish_branch: gh-pages
-        keep_files: true     
+        keep_files: true # Critical: Retains previous run folders

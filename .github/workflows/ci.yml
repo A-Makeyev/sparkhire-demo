@@ -10,7 +10,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Allows the runner to create the gh-pages branch
+      contents: write
 
     steps:
     - uses: actions/checkout@v4
@@ -33,7 +33,6 @@ jobs:
         CHROME_HEADLESS: true 
         GITHUB_RUN_NUMBER: ${{ github.run_number }}
 
-    # Expert Step: Create a Landing Page (index.html) so the URL isn't blank
     - name: Generate Dashboard Index
       if: always()
       run: |
@@ -58,4 +57,4 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./Results 
         publish_branch: gh-pages
-        keep_files: true # Critical: Retains previous run folders
+        keep_files: true 

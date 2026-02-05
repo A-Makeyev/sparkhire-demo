@@ -1,5 +1,5 @@
 # sparkhire-demo
-Sparkhire test automation demo
+[Sparkhire test automation demo](https://a-makeyev.github.io/sparkhire-demo)
 
 ## Installation
 dotnet restore

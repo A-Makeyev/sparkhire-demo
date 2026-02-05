@@ -33,16 +33,26 @@ jobs:
         CHROME_HEADLESS: true 
         GITHUB_RUN_NUMBER: ${{ github.run_number }}
 
+    - name: Download old reports
+      uses: actions/checkout@v4
+      with:
+        ref: gh-pages
+        path: old-reports
+
     - name: Generate Dashboard Index
       if: always()
       run: |
-        mkdir -p Results
+        # Sync old reports into current Results folder
+        if [ -d "old-reports" ]; then
+          cp -rn old-reports/Run-* Results/ 2>/dev/null || true
+        fi
+        
         cd Results
         echo "<!DOCTYPE html><html><head><title>Test Archive</title>" > index.html
-        echo "<style>body{font-family:Segoe UI,Tahoma,Arial;padding:40px;background:#f4f7f6;} h1{color:#2c3e50;} ul{list-style:none;padding:0;} li{background:#fff;margin:8px 0;padding:15px;border-radius:5px;box-shadow:0 2px 5px rgba(0,0,0,0.1);} a{text-decoration:none;color:#3498db;font-weight:bold;display:block;}</style>" >> index.html
+        echo "<style>body{font-family:sans-serif;padding:40px;background:#f4f7f6;} h1{color:#2c3e50;} ul{list-style:none;padding:0;} li{background:#fff;margin:8px 0;padding:15px;border-radius:5px;} a{text-decoration:none;color:#3498db;display:block;}</style>" >> index.html
         echo "</head><body><h1>🚀 QA Automation Reports Archive</h1><ul>" >> index.html
         
-        # Look at directories, sort by date (newest first), and create links
+        # Sort all folders (old and new) by date
         for dir in $(ls -dt Run-*/ | sed 's/\///g'); do
           echo "<li><a href='./$dir/index.html'>📂 $dir</a></li>" >> index.html
         done
@@ -57,4 +67,5 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./Results 
         publish_branch: gh-pages
-        keep_files: true 
+        keep_files: true
+

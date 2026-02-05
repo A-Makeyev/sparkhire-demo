@@ -17,12 +17,9 @@ namespace Reports {
                 if (string.IsNullOrEmpty(runId)) {
                     runId = "Local-" + new Random().Next(1000, 9999);
                 }
-
-                string timestamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
-                string folderName = $"Run-{runId}_{timestamp}";
                 
-                // Construct path to Results folder in project root
-                var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "Results", folderName);
+                var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "Results");
+                _currentReportPath = Path.Combine(path, "index.html");
                 
                 if (!Directory.Exists(path)) Directory.CreateDirectory(path);
 

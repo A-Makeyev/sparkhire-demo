@@ -1,6 +1,10 @@
 # sparkhire-demo
 [Sparkhire test automation demo results](https://a-makeyev.github.io/sparkhire-demo)
 
+<img src="https://github.com/A-Makeyev/sparkhire-demo/blob/main/preview/1.jpg" alt="Description of image" width="500"/>
+<img src="https://github.com/A-Makeyev/sparkhire-demo/blob/main/preview/2.jpg" alt="Description of image" width="500"/>
+<img src="https://github.com/A-Makeyev/sparkhire-demo/blob/main/preview/3.jpg" alt="Description of image" width="500"/>
+
 ## Installation
 dotnet restore
 

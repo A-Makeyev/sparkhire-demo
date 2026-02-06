@@ -10,7 +10,7 @@ namespace ComeetDemoTests.Pages {
 
         protected BasePage(IWebDriver driver) {
             Driver = driver;
-            Wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+            Wait = new WebDriverWait(driver, TimeSpan.FromSeconds(30));
         }
 
         protected IWebElement WaitForVisible(By locator) {

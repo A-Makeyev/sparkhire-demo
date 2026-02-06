@@ -1,4 +1,4 @@
-name: CI Tests
+name: CI/CD Pipeline
 
 on:
   push:
@@ -30,91 +30,9 @@ jobs:
       - name: Run tests
         run: dotnet test --no-build --verbosity normal
         env:
-          BASE_URL: ${{ secrets.BASE_URL || 'https://www.comeet.com' }}
-          CHROME_HEADLESS: true
+          CI: true
+          BASE_URL: https://www.comeet.com
           GITHUB_RUN_NUMBER: ${{ github.run_number }}
-
-      - name: Download previous reports
-        uses: actions/checkout@v4
-        with:
-          ref: gh-pages
-          path: old-reports
-
-      - name: Prepare results page
-        if: always()
-        run: |
-          mkdir -p Results
-
-          # Copy all previous Run-* folders if they exist
-          if [ -d "old-reports" ]; then
-            cp -rn old-reports/Run-* Results/ 2>/dev/null || true
-          fi
-
-          # Your new report should already be in Results/
-          # If it's somewhere else, add: mv your-report-folder Results/
-
-          cd Results
-
-          # Create very simple index.html
-          cat > index.html << 'EOF'
-          <!DOCTYPE html>
-          <html lang="en">
-          <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Sparkhire Test Reports</title>
-            <style>
-              body {
-                font-family: Arial, sans-serif;
-                margin: 40px;
-                background: #f9f9f9;
-                color: #333;
-              }
-              h1 {
-                text-align: center;
-                color: #444;
-              }
-              ul {
-                list-style: none;
-                padding: 0;
-                max-width: 800px;
-                margin: 0 auto;
-              }
-              li {
-                margin: 12px 0;
-                padding: 15px;
-                background: white;
-                border-radius: 6px;
-                box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-              }
-              a {
-                text-decoration: none;
-                color: #0066cc;
-                font-size: 1.1em;
-              }
-              a:hover {
-                text-decoration: underline;
-              }
-            </style>
-          </head>
-          <body>
-            <h1>🧪 Sparkhire Test Reports</h1>
-            <ul>
-          EOF
-
-          # Add links to all Run-* folders (newest first)
-          ls -d Run-* 2>/dev/null | sort -r | while read dir; do
-            echo "      <li><a href=\"$dir/index.html\">$dir</a></li>" >> index.html
-          done
-
-          # Close HTML
-          cat >> index.html << 'EOF'
-            </ul>
-          </body>
-          </html>
-          EOF
-
-          cd ..
 
       - name: Deploy to GitHub Pages
         if: always()
@@ -123,4 +41,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./Results
           publish_branch: gh-pages
-          force_orphan: true         
+          force_orphan: false

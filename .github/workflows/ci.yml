@@ -34,6 +34,14 @@ jobs:
           BASE_URL: https://www.comeet.com
           GITHUB_RUN_NUMBER: ${{ github.run_number }}
 
+      - name: Save run timestamp
+        if: always()
+        run: |
+          RUN_DIR="Results/Run-${{ github.run_number }}"
+          if [ -d "$RUN_DIR" ]; then
+            date '+%d-%m-%Y %I:%M%p' > "$RUN_DIR/timestamp.txt"
+          fi
+
       - name: Download previous reports
         uses: actions/checkout@v4
         with:
@@ -134,9 +142,16 @@ jobs:
           # Add links to all Run-* folders (newest first)
           ls -d Run-* 2>/dev/null | sed 's/Run-//' | sort -rn | while read num; do
             dir="Run-$num"
+            timestamp=""
+            if [ -f "$dir/timestamp.txt" ]; then
+              timestamp=$(cat "$dir/timestamp.txt")
+            fi
             echo "        <li class=\"report-item\">" >> index.html
             echo "          <a href=\"$dir/index.html\" class=\"report-link\">" >> index.html
             echo "            <div class=\"run-number\">Run #$num</div>" >> index.html
+            if [ -n "$timestamp" ]; then
+              echo "            <div class=\"run-date\">$timestamp</div>" >> index.html
+            fi
             echo "          </a>" >> index.html
             echo "        </li>" >> index.html
           done

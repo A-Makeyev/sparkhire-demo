@@ -6,6 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧪</text></svg>">
   <title>Sparkhire Test Reports</title>
   <style>
     body {
@@ -21,9 +22,8 @@
     }
     .header {
       display: flex;
-      flex-direction: column;
+      justify-content: space-between;
       align-items: center;
-      gap: 20px;
       margin-bottom: 30px;
     }
     h1 {
@@ -31,7 +31,6 @@
       font-size: 2.5em;
       margin: 0;
       text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-      text-align: center;
     }
     .refresh-btn {
       background: rgba(255,255,255,0.15);
@@ -97,7 +96,7 @@
     }
     .link-icon {
       color: #999;
-      font-size: 1.2em;
+      font-size: 1.8em;
       opacity: 0;
       transition: opacity 0.2s;
     }
@@ -108,11 +107,25 @@
       font-size: 1.3em;
       font-weight: 600;
       color: #667eea;
-      margin-bottom: 5px;
+      margin-bottom: 8px;
     }
     .run-date {
       font-size: 0.9em;
       color: #666;
+      margin-top: 4px;
+    }
+    .test-stats {
+      display: flex;
+      gap: 16px;
+      margin-top: 8px;
+      font-size: 0.85em;
+    }
+    .stat-item {
+      color: #888;
+    }
+    .stat-value {
+      font-weight: 600;
+      color: #555;
     }
     .badge {
       display: inline-block;
@@ -134,18 +147,39 @@
 <body>
   <div class="container">
     <div class="header">
-      <h1>🧪 Sparkhire Test Reports</h1>
       <button class="refresh-btn" onclick="refreshReports()">↻</button>
+      <h1>🧪 Sparkhire Test Reports</h1>
     </div>
     <div class="last-updated" id="lastUpdated"></div>
     <ul class="reports-list" id="reportsList">
+        <li class="report-item">
+          <a href="Run-29/index.html" class="report-link">
+            <div class="report-content">
+              <div class="run-number">Run #29 <span class="badge badge-success">✓ Passed</span></div>
+              <div class="run-date">06-02-2026 12:19PM</div>
+              <div class="test-stats">
+                <span class="stat-item">Total: <span class="stat-value">5</span></span>
+                <span class="stat-item">Passed: <span class="stat-value">5</span></span>
+                <span class="stat-item">Failed: <span class="stat-value">0</span></span>
+                <span class="stat-item">Duration: <span class="stat-value">46s</span></span>
+              </div>
+            </div>
+            <div class="link-icon">⧉</div>
+          </a>
+        </li>
         <li class="report-item">
           <a href="Run-28/index.html" class="report-link">
             <div class="report-content">
               <div class="run-number">Run #28 <span class="badge badge-success">✓ Passed</span></div>
               <div class="run-date">06-02-2026 12:10PM</div>
+              <div class="test-stats">
+                <span class="stat-item">Total: <span class="stat-value">9</span></span>
+                <span class="stat-item">Passed: <span class="stat-value">9</span></span>
+                <span class="stat-item">Failed: <span class="stat-value">0</span></span>
+                <span class="stat-item">Duration: <span class="stat-value">68s</span></span>
+              </div>
             </div>
-            <div class="link-icon">→</div>
+            <div class="link-icon">⧉</div>
           </a>
         </li>
         <li class="report-item">
@@ -153,8 +187,14 @@
             <div class="report-content">
               <div class="run-number">Run #27 <span class="badge badge-success">✓ Passed</span></div>
               <div class="run-date">06-02-2026 12:02PM</div>
+              <div class="test-stats">
+                <span class="stat-item">Total: <span class="stat-value">5</span></span>
+                <span class="stat-item">Passed: <span class="stat-value">5</span></span>
+                <span class="stat-item">Failed: <span class="stat-value">0</span></span>
+                <span class="stat-item">Duration: <span class="stat-value">104s</span></span>
+              </div>
             </div>
-            <div class="link-icon">→</div>
+            <div class="link-icon">⧉</div>
           </a>
         </li>
         <li class="report-item">
@@ -162,8 +202,14 @@
             <div class="report-content">
               <div class="run-number">Run #26 <span class="badge badge-success">✓ Passed</span></div>
               <div class="run-date">06-02-2026 11:52AM</div>
+              <div class="test-stats">
+                <span class="stat-item">Total: <span class="stat-value">9</span></span>
+                <span class="stat-item">Passed: <span class="stat-value">9</span></span>
+                <span class="stat-item">Failed: <span class="stat-value">0</span></span>
+                <span class="stat-item">Duration: <span class="stat-value">63s</span></span>
+              </div>
             </div>
-            <div class="link-icon">→</div>
+            <div class="link-icon">⧉</div>
           </a>
         </li>
         <li class="report-item">
@@ -171,8 +217,14 @@
             <div class="report-content">
               <div class="run-number">Run #25 <span class="badge badge-success">✓ Passed</span></div>
               <div class="run-date">06-02-2026 11:39AM</div>
+              <div class="test-stats">
+                <span class="stat-item">Total: <span class="stat-value">7</span></span>
+                <span class="stat-item">Passed: <span class="stat-value">7</span></span>
+                <span class="stat-item">Failed: <span class="stat-value">0</span></span>
+                <span class="stat-item">Duration: <span class="stat-value">102s</span></span>
+              </div>
             </div>
-            <div class="link-icon">→</div>
+            <div class="link-icon">⧉</div>
           </a>
         </li>
         <li class="report-item">
@@ -180,32 +232,56 @@
             <div class="report-content">
               <div class="run-number">Run #24</div>
               <div class="run-date">06-02-2026 11:19AM</div>
+              <div class="test-stats">
+                <span class="stat-item">Total: <span class="stat-value">11</span></span>
+                <span class="stat-item">Passed: <span class="stat-value">9</span></span>
+                <span class="stat-item">Failed: <span class="stat-value">2</span></span>
+                <span class="stat-item">Duration: <span class="stat-value">108s</span></span>
+              </div>
             </div>
-            <div class="link-icon">→</div>
+            <div class="link-icon">⧉</div>
           </a>
         </li>
         <li class="report-item">
           <a href="Run-23/index.html" class="report-link">
             <div class="report-content">
               <div class="run-number">Run #23</div>
+              <div class="test-stats">
+                <span class="stat-item">Total: <span class="stat-value">5</span></span>
+                <span class="stat-item">Passed: <span class="stat-value">4</span></span>
+                <span class="stat-item">Failed: <span class="stat-value">1</span></span>
+                <span class="stat-item">Duration: <span class="stat-value">60s</span></span>
+              </div>
             </div>
-            <div class="link-icon">→</div>
+            <div class="link-icon">⧉</div>
           </a>
         </li>
         <li class="report-item">
           <a href="Run-22/index.html" class="report-link">
             <div class="report-content">
               <div class="run-number">Run #22</div>
+              <div class="test-stats">
+                <span class="stat-item">Total: <span class="stat-value">5</span></span>
+                <span class="stat-item">Passed: <span class="stat-value">4</span></span>
+                <span class="stat-item">Failed: <span class="stat-value">1</span></span>
+                <span class="stat-item">Duration: <span class="stat-value">68s</span></span>
+              </div>
             </div>
-            <div class="link-icon">→</div>
+            <div class="link-icon">⧉</div>
           </a>
         </li>
         <li class="report-item">
           <a href="Run-21/index.html" class="report-link">
             <div class="report-content">
               <div class="run-number">Run #21</div>
+              <div class="test-stats">
+                <span class="stat-item">Total: <span class="stat-value">9</span></span>
+                <span class="stat-item">Passed: <span class="stat-value">7</span></span>
+                <span class="stat-item">Failed: <span class="stat-value">2</span></span>
+                <span class="stat-item">Duration: <span class="stat-value">53s</span></span>
+              </div>
             </div>
-            <div class="link-icon">→</div>
+            <div class="link-icon">⧉</div>
           </a>
         </li>
     </ul>

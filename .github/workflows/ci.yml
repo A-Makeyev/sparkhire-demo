@@ -50,7 +50,7 @@ jobs:
         cd Results
         echo "<!DOCTYPE html><html><head><title>Test Archive</title>" > index.html
         echo "<style>body{font-family:sans-serif;padding:40px;background:#f4f7f6;} h1{color:#2c3e50;} ul{list-style:none;padding:0;} li{background:#fff;margin:8px 0;padding:15px;border-radius:5px;} a{text-decoration:none;color:#3498db;display:block;}</style>" >> index.html
-        echo "</head><body><h1>🚀 QA Automation Reports Archive</h1><ul>" >> index.html
+        echo "</head><body><h1>🧪 Sparkhire Test Reports</h1><ul>" >> index.html
         
         # Sort all folders (old and new) by date
         for dir in $(ls -dt Run-*/ | sed 's/\///g'); do

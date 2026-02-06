@@ -22,7 +22,7 @@ namespace ComeetDemoTests.Pages {
 
             stopwatch.Stop();
             if (stopwatch.Elapsed.TotalSeconds > 3) {
-                Console.WriteLine($"WARNING: Get Demo page took {stopwatch.Elapsed.TotalSeconds:F2}s to load.");
+                Console.WriteLine($"WARNING: Get Demo page took {stopwatch.Elapsed.TotalSeconds:F2}s to load!");
             }
         }
 
@@ -32,26 +32,22 @@ namespace ComeetDemoTests.Pages {
         }
 
         public void FillContactDetails() {
-            Driver.FindElement(FirstNameInput).SendKeys("Anatoly");
-            Driver.FindElement(LastNameInput).SendKeys("Makeyev");
-            Driver.FindElement(CompanyInput).SendKeys("Cloudbeat");
-            Driver.FindElement(EmailInput).SendKeys("anatoly.makeyev@cloudbeat.io");
+            WaitForVisible(FirstNameInput).SendKeys("Anatoly");
+            WaitForVisible(LastNameInput).SendKeys("Makeyev");
+            WaitForVisible(CompanyInput).SendKeys("Cloudbeat");
+            WaitForVisible(EmailInput).SendKeys("anatoly.makeyev@cloudbeat.io");
         }
 
         public void FillRandomizedBusinessDetails() {
-            new SelectElement(WaitForVisible(CompanySizeSelect))
-                .SelectByIndex(RandomIndex(1, 7));
-
-            new SelectElement(WaitForVisible(CountrySelect))
-                .SelectByText("Israel");
-
-            new SelectElement(WaitForVisible(ProductInterestSelect))
-                .SelectByValue("Video Interviews");
+            new SelectElement(WaitForVisible(CompanySizeSelect)).SelectByIndex(RandomIndex(1, 7));
+            new SelectElement(WaitForVisible(CountrySelect)).SelectByText("Israel");
+            new SelectElement(WaitForVisible(ProductInterestSelect)).SelectByValue("Video Interviews");
         }
 
         public void SubmitForm() {
             var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(10));
             wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(SubmitButton));
+            
             // WaitForVisible(SubmitButton).Click();
             Thread.Sleep(2500);
         }

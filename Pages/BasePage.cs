@@ -2,6 +2,7 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
 
+
 namespace ComeetDemoTests.Pages {
     public abstract class BasePage {
         protected readonly IWebDriver Driver;

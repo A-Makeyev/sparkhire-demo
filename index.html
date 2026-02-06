@@ -21,61 +21,53 @@
     }
     .header {
       display: flex;
-      justify-content: space-between;
+      flex-direction: column;
       align-items: center;
-      margin-bottom: 40px;
+      gap: 20px;
+      margin-bottom: 30px;
     }
     h1 {
       color: white;
       font-size: 2.5em;
       margin: 0;
       text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      text-align: center;
     }
     .refresh-btn {
-      background: rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.15);
       color: white;
-      border: 2px solid white;
-      padding: 10px 20px;
-      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.3);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
       cursor: pointer;
-      font-size: 0.9em;
-      font-weight: 600;
+      font-size: 1.4em;
       transition: all 0.3s;
       display: flex;
       align-items: center;
-      gap: 8px;
+      justify-content: center;
     }
     .refresh-btn:hover {
-      background: rgba(255,255,255,0.3);
-      transform: scale(1.05);
+      background: rgba(255,255,255,0.25);
+      transform: rotate(180deg);
     }
     .refresh-btn:active {
-      transform: scale(0.95);
+      transform: rotate(180deg) scale(0.9);
     }
     .refresh-btn.loading {
       opacity: 0.6;
       cursor: wait;
-    }
-    .spinner {
-      display: none;
-      width: 14px;
-      height: 14px;
-      border: 2px solid white;
-      border-top-color: transparent;
-      border-radius: 50%;
-      animation: spin 0.6s linear infinite;
-    }
-    .refresh-btn.loading .spinner {
-      display: block;
+      animation: spin 1s linear infinite;
     }
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
     .last-updated {
       text-align: center;
-      color: rgba(255,255,255,0.8);
+      color: rgba(255,255,255,0.9);
       font-size: 0.85em;
-      margin-bottom: 20px;
+      margin-bottom: 25px;
+      font-weight: 500;
     }
     .reports-list {
       list-style: none;
@@ -93,10 +85,24 @@
       box-shadow: 0 8px 12px rgba(0,0,0,0.15);
     }
     .report-link {
-      display: block;
-      padding: 20px 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
       text-decoration: none;
       color: #333;
+    }
+    .report-content {
+      flex: 1;
+    }
+    .link-icon {
+      color: #999;
+      font-size: 1.2em;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .report-item:hover .link-icon {
+      opacity: 1;
     }
     .run-number {
       font-size: 1.3em;
@@ -129,44 +135,68 @@
   <div class="container">
     <div class="header">
       <h1>🧪 Sparkhire Test Reports</h1>
-      <button class="refresh-btn" onclick="refreshReports()">
-        <span class="spinner"></span>
-        <span class="btn-text">Refresh</span>
-      </button>
+      <button class="refresh-btn" onclick="refreshReports()">↻</button>
     </div>
     <div class="last-updated" id="lastUpdated"></div>
     <ul class="reports-list" id="reportsList">
         <li class="report-item">
+          <a href="Run-27/index.html" class="report-link">
+            <div class="report-content">
+              <div class="run-number">Run #27 <span class="badge badge-success">✓ Passed</span></div>
+              <div class="run-date">06-02-2026 12:02PM</div>
+            </div>
+            <div class="link-icon">→</div>
+          </a>
+        </li>
+        <li class="report-item">
           <a href="Run-26/index.html" class="report-link">
-            <div class="run-number">Run #26 <span class="badge badge-success">✓ Passed</span></div>
-            <div class="run-date">06-02-2026 11:52AM</div>
+            <div class="report-content">
+              <div class="run-number">Run #26 <span class="badge badge-success">✓ Passed</span></div>
+              <div class="run-date">06-02-2026 11:52AM</div>
+            </div>
+            <div class="link-icon">→</div>
           </a>
         </li>
         <li class="report-item">
           <a href="Run-25/index.html" class="report-link">
-            <div class="run-number">Run #25 <span class="badge badge-success">✓ Passed</span></div>
-            <div class="run-date">06-02-2026 11:39AM</div>
+            <div class="report-content">
+              <div class="run-number">Run #25 <span class="badge badge-success">✓ Passed</span></div>
+              <div class="run-date">06-02-2026 11:39AM</div>
+            </div>
+            <div class="link-icon">→</div>
           </a>
         </li>
         <li class="report-item">
           <a href="Run-24/index.html" class="report-link">
-            <div class="run-number">Run #24</div>
-            <div class="run-date">06-02-2026 11:19AM</div>
+            <div class="report-content">
+              <div class="run-number">Run #24</div>
+              <div class="run-date">06-02-2026 11:19AM</div>
+            </div>
+            <div class="link-icon">→</div>
           </a>
         </li>
         <li class="report-item">
           <a href="Run-23/index.html" class="report-link">
-            <div class="run-number">Run #23</div>
+            <div class="report-content">
+              <div class="run-number">Run #23</div>
+            </div>
+            <div class="link-icon">→</div>
           </a>
         </li>
         <li class="report-item">
           <a href="Run-22/index.html" class="report-link">
-            <div class="run-number">Run #22</div>
+            <div class="report-content">
+              <div class="run-number">Run #22</div>
+            </div>
+            <div class="link-icon">→</div>
           </a>
         </li>
         <li class="report-item">
           <a href="Run-21/index.html" class="report-link">
-            <div class="run-number">Run #21</div>
+            <div class="report-content">
+              <div class="run-number">Run #21</div>
+            </div>
+            <div class="link-icon">→</div>
           </a>
         </li>
     </ul>

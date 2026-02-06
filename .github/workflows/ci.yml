@@ -10,10 +10,11 @@ jobs:
   test:
     runs-on: ubuntu-latest
     permissions:
-      contents: write       # needed for gh-pages commit
+      contents: write
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -33,43 +34,61 @@ jobs:
           CHROME_HEADLESS: true
           GITHUB_RUN_NUMBER: ${{ github.run_number }}
 
-      - name: Download previous reports (gh-pages)
+      - name: Download previous reports from gh-pages
         uses: actions/checkout@v4
         with:
           ref: gh-pages
           path: old-reports
 
-      - name: Prepare reports & keep only last 10
+      - name: Prepare reports - merge, prune old, generate index
         if: always()
         run: |
           mkdir -p Results
 
-          # Copy old reports (if any)
+          # Copy previous reports (if gh-pages exists)
           if [ -d "old-reports" ]; then
             cp -rn old-reports/Run-* Results/ 2>/dev/null || true
           fi
 
-          # Add the new report (assuming it's already generated in Results/Run-...)
-          # If your test step generates it somewhere else → mv it here first
+          # Your new report should already be in ./Results/Run-... from the test step
+          # If it's generated elsewhere, add: mv path/to/new-report Results/
 
           cd Results
 
-          # Keep only the newest 10 folders (based on name sorting - assumes chronological naming!)
-          # You can adjust head -n 10 → higher/lower number
+          # Keep only the newest 10 reports
+          # Your naming (Run-N_YYYY-MM-DD_HH-MM-SS) sorts correctly with plain sort -r
           ls -d Run-* 2>/dev/null | sort -r | tail -n +11 | xargs -r rm -rf
 
-          # Generate index.html with remaining (newest first) reports
+          # Generate index.html - newest reports first
           {
-            echo "<!DOCTYPE html><html><head><title>Test Archive</title>"
-            echo "<style>body{font-family:sans-serif;padding:40px;background:#f4f7f6;} h1{color:#2c3e50;} ul{list-style:none;padding:0;} li{background:#fff;margin:8px 0;padding:15px;border-radius:5px;} a{text-decoration:none;color:#3498db;display:block;}</style>"
-            echo "</head><body><h1>🧪 Sparkhire Test Reports</h1><ul>"
-            
-            # List newest first
+            echo "<!DOCTYPE html>"
+            echo "<html lang=\"en\">"
+            echo "<head>"
+            echo "  <meta charset=\"UTF-8\">"
+            echo "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">"
+            echo "  <title>Sparkhire Test Reports</title>"
+            echo "  <style>"
+            echo "    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 40px; background: #f8f9fa; color: #333; line-height: 1.6; }"
+            echo "    h1 { color: #2c3e50; text-align: center; margin-bottom: 2rem; }"
+            echo "    ul { list-style: none; padding: 0; max-width: 900px; margin: 0 auto; }"
+            echo "    li { background: white; margin: 12px 0; padding: 18px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: transform 0.1s; }"
+            echo "    li:hover { transform: translateY(-2px); }"
+            echo "    a { text-decoration: none; color: #0066cc; font-weight: 500; display: flex; align-items: center; gap: 12px; font-size: 1.1rem; }"
+            echo "    a:hover { color: #004080; }"
+            echo "    .emoji { font-size: 1.5em; }"
+            echo "  </style>"
+            echo "</head>"
+            echo "<body>"
+            echo "  <h1>🧪 Sparkhire Test Reports</h1>"
+            echo "  <ul>"
+
             for dir in $(ls -d Run-* 2>/dev/null | sort -r); do
-              echo "<li><a href='./$dir/index.html'>📂 $dir</a></li>"
+              echo "    <li><a href=\"./$dir/index.html\"><span class=\"emoji\">📁</span> $dir</a></li>"
             done
-            
-            echo "</ul></body></html>"
+
+            echo "  </ul>"
+            echo "</body>"
+            echo "</html>"
           } > index.html
 
           cd ..
@@ -81,5 +100,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./Results
           publish_branch: gh-pages
-          keep_files: true       
-          # force_orphan: true
+          force_orphan: true

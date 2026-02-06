@@ -34,62 +34,85 @@ jobs:
           CHROME_HEADLESS: true
           GITHUB_RUN_NUMBER: ${{ github.run_number }}
 
-      - name: Download previous reports from gh-pages
+      - name: Download previous reports
         uses: actions/checkout@v4
         with:
           ref: gh-pages
           path: old-reports
 
-      - name: Prepare reports - merge, prune old, generate index
+      - name: Prepare results page
         if: always()
         run: |
           mkdir -p Results
 
-          # Copy previous reports (if gh-pages exists)
+          # Copy all previous Run-* folders if they exist
           if [ -d "old-reports" ]; then
             cp -rn old-reports/Run-* Results/ 2>/dev/null || true
           fi
 
-          # Your new report should already be in ./Results/Run-... from the test step
-          # If it's generated elsewhere, add: mv path/to/new-report Results/
+          # Your new report should already be in Results/
+          # If it's somewhere else, add: mv your-report-folder Results/
 
           cd Results
 
-          # Keep only the newest 10 reports
-          # Your naming (Run-N_YYYY-MM-DD_HH-MM-SS) sorts correctly with plain sort -r
-          ls -d Run-* 2>/dev/null | sort -r | tail -n +11 | xargs -r rm -rf
+          # Create very simple index.html
+          cat > index.html << 'EOF'
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Sparkhire Test Reports</title>
+            <style>
+              body {
+                font-family: Arial, sans-serif;
+                margin: 40px;
+                background: #f9f9f9;
+                color: #333;
+              }
+              h1 {
+                text-align: center;
+                color: #444;
+              }
+              ul {
+                list-style: none;
+                padding: 0;
+                max-width: 800px;
+                margin: 0 auto;
+              }
+              li {
+                margin: 12px 0;
+                padding: 15px;
+                background: white;
+                border-radius: 6px;
+                box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+              }
+              a {
+                text-decoration: none;
+                color: #0066cc;
+                font-size: 1.1em;
+              }
+              a:hover {
+                text-decoration: underline;
+              }
+            </style>
+          </head>
+          <body>
+            <h1>🧪 Sparkhire Test Reports</h1>
+            <ul>
+          EOF
 
-          # Generate index.html - newest reports first
-          {
-            echo "<!DOCTYPE html>"
-            echo "<html lang=\"en\">"
-            echo "<head>"
-            echo "  <meta charset=\"UTF-8\">"
-            echo "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">"
-            echo "  <title>Sparkhire Test Reports</title>"
-            echo "  <style>"
-            echo "    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 40px; background: #f8f9fa; color: #333; line-height: 1.6; }"
-            echo "    h1 { color: #2c3e50; text-align: center; margin-bottom: 2rem; }"
-            echo "    ul { list-style: none; padding: 0; max-width: 900px; margin: 0 auto; }"
-            echo "    li { background: white; margin: 12px 0; padding: 18px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: transform 0.1s; }"
-            echo "    li:hover { transform: translateY(-2px); }"
-            echo "    a { text-decoration: none; color: #0066cc; font-weight: 500; display: flex; align-items: center; gap: 12px; font-size: 1.1rem; }"
-            echo "    a:hover { color: #004080; }"
-            echo "    .emoji { font-size: 1.5em; }"
-            echo "  </style>"
-            echo "</head>"
-            echo "<body>"
-            echo "  <h1>🧪 Sparkhire Test Reports</h1>"
-            echo "  <ul>"
+          # Add links to all Run-* folders (newest first)
+          ls -d Run-* 2>/dev/null | sort -r | while read dir; do
+            echo "      <li><a href=\"$dir/index.html\">$dir</a></li>" >> index.html
+          done
 
-            for dir in $(ls -d Run-* 2>/dev/null | sort -r); do
-              echo "    <li><a href=\"./$dir/index.html\"><span class=\"emoji\">📁</span> $dir</a></li>"
-            done
-
-            echo "  </ul>"
-            echo "</body>"
-            echo "</html>"
-          } > index.html
+          # Close HTML
+          cat >> index.html << 'EOF'
+            </ul>
+          </body>
+          </html>
+          EOF
 
           cd ..
 
@@ -100,4 +123,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./Results
           publish_branch: gh-pages
-          force_orphan: true
+          force_orphan: true         

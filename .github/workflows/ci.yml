@@ -98,8 +98,10 @@ jobs:
               .header {
                 display: flex;
                 justify-content: space-between;
+                flex-direction: row;
                 align-items: center;
                 margin-bottom: 30px;
+                padding: 0 10px;
               }
               h1 {
                 color: white;
@@ -171,7 +173,8 @@ jobs:
               }
               .link-icon {
                 color: #999;
-                font-size: 1.3em;
+                font-size: 2em;
+                font-weight: bolder;
                 opacity: 0;
                 transition: opacity 0.2s;
               }
@@ -233,8 +236,8 @@ jobs:
           <body>
             <div class="container">
               <div class="header">
-                <button class="refresh-btn" onclick="refreshReports()">↻</button>
                 <h1>🧪 Sparkhire Test Reports</h1>
+                <button class="refresh-btn" onclick="refreshReports()">↻</button>
               </div>
               <div class="last-updated" id="lastUpdated"></div>
               <ul class="reports-list" id="reportsList">
@@ -263,11 +266,12 @@ jobs:
               # Extract test type from the report (e.g., "Regression Testing")
               test_type=$(grep -oP 'class="report-name">.*?<\/span>' "$dir/index.html" 2>/dev/null | sed -n 's/.*>\(.*\)<\/span>/\1/p' | head -1)
               
-              # Extract test counts from the HTML
-              passed=$(grep -oP 'test-count pass">\K[0-9]+' "$dir/index.html" 2>/dev/null | head -1)
-              failed=$(grep -oP 'test-count fail">\K[0-9]+' "$dir/index.html" 2>/dev/null | head -1)
-              skipped=$(grep -oP 'test-count skip">\K[0-9]+' "$dir/index.html" 2>/dev/null | head -1)
-              others=$(grep -oP 'test-count others">\K[0-9]+' "$dir/index.html" 2>/dev/null | head -1)
+              # Extract test counts from the HTML - searching for the specific card-footer pattern
+              # <small data-tooltip='100%'><b>1</b> tests passed</small>
+              passed=$(grep -oP "<b>\K[0-9]+(?=</b> tests passed)" "$dir/index.html" 2>/dev/null | head -1)
+              failed=$(grep -oP "<b>\K[0-9]+(?=</b> tests failed)" "$dir/index.html" 2>/dev/null | head -1)
+              skipped=$(grep -oP "<b>\K[0-9]+(?=</b> skipped)" "$dir/index.html" 2>/dev/null | head -1)
+              others=$(grep -oP "</b> skipped, <b[^>]*>\K[0-9]+(?=</b> others)" "$dir/index.html" 2>/dev/null | head -1)
               
               # Default to 0 if not found
               passed=${passed:-0}
@@ -276,13 +280,14 @@ jobs:
               others=${others:-0}
             fi
             
-            total_tests=$((passed + failed + skipped + others))
+            # Fix display number - incrementing by 1 to match GitHub Pages deployment number as observed by user
+            display_num=$((num + 1))
             
             echo "        <li class=\"report-item\">" >> index.html
             echo "          <a href=\"$dir/index.html\" class=\"report-link\">" >> index.html
             echo "            <div class=\"report-content\">" >> index.html
             echo "              <div class=\"run-header\">" >> index.html
-            echo -n "                <span class=\"run-number\">Run #$num" >> index.html
+            echo -n "                <span class=\"run-number\">Run #$display_num" >> index.html
             if [ "$status" == "passed" ]; then
               echo " <span class=\"badge badge-success\">✓ Passed</span></span>" >> index.html
             elif [ "$status" == "failed" ]; then

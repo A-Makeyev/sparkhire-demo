@@ -34,6 +34,123 @@ jobs:
           BASE_URL: https://www.comeet.com
           GITHUB_RUN_NUMBER: ${{ github.run_number }}
 
+      - name: Download previous reports
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: old-reports
+        continue-on-error: true
+
+      - name: Prepare results with history
+        if: always()
+        run: |
+          # Copy previous reports if they exist
+          if [ -d "old-reports" ]; then
+            cp -rn old-reports/Run-* Results/ 2>/dev/null || true
+          fi
+
+          cd Results
+
+          # Keep only last 10 runs (sort numerically by run number)
+          ls -d Run-* 2>/dev/null | sed 's/Run-//' | sort -n | head -n -10 | while read num; do
+            rm -rf "Run-$num"
+          done
+
+          # Create index page
+          cat > index.html << 'EOF'
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Sparkhire Test Reports</title>
+            <style>
+              body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+                margin: 0;
+                padding: 40px 20px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+              }
+              .container {
+                max-width: 900px;
+                margin: 0 auto;
+              }
+              h1 {
+                text-align: center;
+                color: white;
+                font-size: 2.5em;
+                margin-bottom: 40px;
+                text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+              }
+              .reports-list {
+                list-style: none;
+                padding: 0;
+              }
+              .report-item {
+                margin: 15px 0;
+                background: white;
+                border-radius: 12px;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                transition: transform 0.2s, box-shadow 0.2s;
+              }
+              .report-item:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+              }
+              .report-link {
+                display: block;
+                padding: 20px 25px;
+                text-decoration: none;
+                color: #333;
+              }
+              .run-number {
+                font-size: 1.3em;
+                font-weight: 600;
+                color: #667eea;
+                margin-bottom: 5px;
+              }
+              .run-date {
+                font-size: 0.9em;
+                color: #666;
+              }
+              .badge {
+                display: inline-block;
+                padding: 4px 12px;
+                background: #667eea;
+                color: white;
+                border-radius: 12px;
+                font-size: 0.8em;
+                margin-left: 10px;
+              }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <h1>🧪 Sparkhire Test Reports</h1>
+              <ul class="reports-list">
+          EOF
+
+          # Add links to all Run-* folders (newest first)
+          ls -d Run-* 2>/dev/null | sed 's/Run-//' | sort -rn | while read num; do
+            dir="Run-$num"
+            echo "        <li class=\"report-item\">" >> index.html
+            echo "          <a href=\"$dir/index.html\" class=\"report-link\">" >> index.html
+            echo "            <div class=\"run-number\">Run #$num</div>" >> index.html
+            echo "          </a>" >> index.html
+            echo "        </li>" >> index.html
+          done
+
+          # Close HTML
+          cat >> index.html << 'EOF'
+              </ul>
+            </div>
+          </body>
+          </html>
+          EOF
+
+          cd ..
+
       - name: Deploy to GitHub Pages
         if: always()
         uses: peaceiris/actions-gh-pages@v4
@@ -42,3 +159,4 @@ jobs:
           publish_dir: ./Results
           publish_branch: gh-pages
           force_orphan: false
+          

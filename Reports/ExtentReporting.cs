@@ -14,16 +14,21 @@ namespace Reports {
             if (_extentReports == null) {
                 // Get GitHub Run ID or generate a random Local ID
                 string? runId = Environment.GetEnvironmentVariable("GITHUB_RUN_NUMBER");
+                string runFolder;
+                
                 if (string.IsNullOrEmpty(runId)) {
                     runId = "Local-" + new Random().Next(1000, 9999);
+                    runFolder = $"Run-{runId}";
+                } else {
+                    runFolder = $"Run-{runId}";
                 }
                 
-                var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "Results");
-                _currentReportPath = Path.Combine(path, "index.html");
+                var resultsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "Results");
+                var runPath = Path.Combine(resultsPath, runFolder);
                 
-                if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+                if (!Directory.Exists(runPath)) Directory.CreateDirectory(runPath);
 
-                _currentReportPath = Path.Combine(path, "index.html");
+                _currentReportPath = Path.Combine(runPath, "index.html");
                 var htmlReporter = new ExtentSparkReporter(_currentReportPath);
                 
                 htmlReporter.Config.DocumentTitle = "Automation Status Report";

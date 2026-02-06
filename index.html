@@ -57,11 +57,17 @@
     .badge {
       display: inline-block;
       padding: 4px 12px;
-      background: #667eea;
       color: white;
       border-radius: 12px;
       font-size: 0.8em;
       margin-left: 10px;
+      font-weight: 500;
+    }
+    .badge-success {
+      background: #10b981;
+    }
+    .badge-failed {
+      background: #ef4444;
     }
   </style>
 </head>
@@ -69,6 +75,12 @@
   <div class="container">
     <h1>🧪 Sparkhire Test Reports</h1>
     <ul class="reports-list">
+        <li class="report-item">
+          <a href="Run-25/index.html" class="report-link">
+            <div class="run-number">Run #25 <span class="badge badge-success">✓ Passed</span></div>
+            <div class="run-date">06-02-2026 11:39AM</div>
+          </a>
+        </li>
         <li class="report-item">
           <a href="Run-24/index.html" class="report-link">
             <div class="run-number">Run #24</div>

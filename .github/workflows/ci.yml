@@ -2,9 +2,9 @@ name: Sprkhire Tests
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   test:
@@ -19,7 +19,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: "8.0.x"
 
       - name: Restore dependencies
         run: dotnet restore
@@ -28,18 +28,25 @@ jobs:
         run: dotnet build --no-restore
 
       - name: Run tests
+        id: test-step
         run: dotnet test --no-build --verbosity normal
+        continue-on-error: true
         env:
           CI: true
           BASE_URL: https://www.comeet.com
           GITHUB_RUN_NUMBER: ${{ github.run_number }}
 
-      - name: Save run timestamp
+      - name: Save run metadata
         if: always()
         run: |
           RUN_DIR="Results/Run-${{ github.run_number }}"
           if [ -d "$RUN_DIR" ]; then
             date '+%d-%m-%Y %I:%M%p' > "$RUN_DIR/timestamp.txt"
+            if [ "${{ steps.test-step.outcome }}" == "success" ]; then
+              echo "passed" > "$RUN_DIR/status.txt"
+            else
+              echo "failed" > "$RUN_DIR/status.txt"
+            fi
           fi
 
       - name: Download previous reports
@@ -125,11 +132,17 @@ jobs:
               .badge {
                 display: inline-block;
                 padding: 4px 12px;
-                background: #667eea;
                 color: white;
                 border-radius: 12px;
                 font-size: 0.8em;
                 margin-left: 10px;
+                font-weight: 500;
+              }
+              .badge-success {
+                background: #10b981;
+              }
+              .badge-failed {
+                background: #ef4444;
               }
             </style>
           </head>
@@ -143,12 +156,23 @@ jobs:
           ls -d Run-* 2>/dev/null | sed 's/Run-//' | sort -rn | while read num; do
             dir="Run-$num"
             timestamp=""
+            status=""
             if [ -f "$dir/timestamp.txt" ]; then
               timestamp=$(cat "$dir/timestamp.txt")
             fi
+            if [ -f "$dir/status.txt" ]; then
+              status=$(cat "$dir/status.txt")
+            fi
             echo "        <li class=\"report-item\">" >> index.html
             echo "          <a href=\"$dir/index.html\" class=\"report-link\">" >> index.html
-            echo "            <div class=\"run-number\">Run #$num</div>" >> index.html
+            echo -n "            <div class=\"run-number\">Run #$num" >> index.html
+            if [ "$status" == "passed" ]; then
+              echo " <span class=\"badge badge-success\">✓ Passed</span></div>" >> index.html
+            elif [ "$status" == "failed" ]; then
+              echo " <span class=\"badge badge-failed\">✗ Failed</span></div>" >> index.html
+            else
+              echo "</div>" >> index.html
+            fi
             if [ -n "$timestamp" ]; then
               echo "            <div class=\"run-date\">$timestamp</div>" >> index.html
             fi
@@ -174,4 +198,3 @@ jobs:
           publish_dir: ./Results
           publish_branch: gh-pages
           force_orphan: false
-          

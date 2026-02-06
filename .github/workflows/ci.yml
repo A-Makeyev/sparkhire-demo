@@ -10,62 +10,76 @@ jobs:
   test:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: write       # needed for gh-pages commit
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '8.0.x'
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
 
-    - name: Restore dependencies
-      run: dotnet restore
+      - name: Restore dependencies
+        run: dotnet restore
 
-    - name: Build
-      run: dotnet build --no-restore
+      - name: Build
+        run: dotnet build --no-restore
 
-    - name: Run tests
-      run: dotnet test --no-build --verbosity normal
-      env:
-        BASE_URL: ${{ secrets.BASE_URL || 'https://www.comeet.com' }}
-        CHROME_HEADLESS: true 
-        GITHUB_RUN_NUMBER: ${{ github.run_number }}
+      - name: Run tests
+        run: dotnet test --no-build --verbosity normal
+        env:
+          BASE_URL: ${{ secrets.BASE_URL || 'https://www.comeet.com' }}
+          CHROME_HEADLESS: true
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
 
-    - name: Download old reports
-      uses: actions/checkout@v4
-      with:
-        ref: gh-pages
-        path: old-reports
+      - name: Download previous reports (gh-pages)
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: old-reports
 
-    - name: Generate Dashboard Index
-      if: always()
-      run: |
-        # Sync old reports into current Results folder
-        if [ -d "old-reports" ]; then
-          cp -rn old-reports/Run-* Results/ 2>/dev/null || true
-        fi
-        
-        cd Results
-        echo "<!DOCTYPE html><html><head><title>Test Archive</title>" > index.html
-        echo "<style>body{font-family:sans-serif;padding:40px;background:#f4f7f6;} h1{color:#2c3e50;} ul{list-style:none;padding:0;} li{background:#fff;margin:8px 0;padding:15px;border-radius:5px;} a{text-decoration:none;color:#3498db;display:block;}</style>" >> index.html
-        echo "</head><body><h1>🧪 Sparkhire Test Reports</h1><ul>" >> index.html
-        
-        # Sort all folders (old and new) by date
-        for dir in $(ls -dt Run-*/ | sed 's/\///g'); do
-          echo "<li><a href='./$dir/index.html'>📂 $dir</a></li>" >> index.html
-        done
-        
-        echo "</ul></body></html>" >> index.html
-        cd ..
+      - name: Prepare reports & keep only last 10
+        if: always()
+        run: |
+          mkdir -p Results
 
-    - name: Deploy to GitHub Pages
-      if: always()
-      uses: peaceiris/actions-gh-pages@v4
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./Results 
-        publish_branch: gh-pages
-        keep_files: true
+          # Copy old reports (if any)
+          if [ -d "old-reports" ]; then
+            cp -rn old-reports/Run-* Results/ 2>/dev/null || true
+          fi
 
+          # Add the new report (assuming it's already generated in Results/Run-...)
+          # If your test step generates it somewhere else → mv it here first
+
+          cd Results
+
+          # Keep only the newest 10 folders (based on name sorting - assumes chronological naming!)
+          # You can adjust head -n 10 → higher/lower number
+          ls -d Run-* 2>/dev/null | sort -r | tail -n +11 | xargs -r rm -rf
+
+          # Generate index.html with remaining (newest first) reports
+          {
+            echo "<!DOCTYPE html><html><head><title>Test Archive</title>"
+            echo "<style>body{font-family:sans-serif;padding:40px;background:#f4f7f6;} h1{color:#2c3e50;} ul{list-style:none;padding:0;} li{background:#fff;margin:8px 0;padding:15px;border-radius:5px;} a{text-decoration:none;color:#3498db;display:block;}</style>"
+            echo "</head><body><h1>🧪 Sparkhire Test Reports</h1><ul>"
+            
+            # List newest first
+            for dir in $(ls -d Run-* 2>/dev/null | sort -r); do
+              echo "<li><a href='./$dir/index.html'>📂 $dir</a></li>"
+            done
+            
+            echo "</ul></body></html>"
+          } > index.html
+
+          cd ..
+
+      - name: Deploy to GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./Results
+          publish_branch: gh-pages
+          keep_files: true       
+          # force_orphan: true

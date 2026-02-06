@@ -159,4 +159,3 @@ jobs:
           publish_dir: ./Results
           publish_branch: gh-pages
           force_orphan: false
-          
